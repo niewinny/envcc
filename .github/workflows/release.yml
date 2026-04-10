@@ -11,6 +11,7 @@ permissions:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
@@ -20,7 +21,7 @@ jobs:
             os: ubuntu-latest
             binary: envcc-linux-arm64
           - target: x86_64-apple-darwin
-            os: macos-latest
+            os: macos-13
             binary: envcc-darwin-x64
           - target: aarch64-apple-darwin
             os: macos-latest
@@ -49,21 +50,24 @@ jobs:
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Rename binary (unix)
+      - name: Prepare binary (unix)
         if: runner.os != 'Windows'
         run: |
-          cp target/${{ matrix.target }}/release/envcc binaries/${{ matrix.binary }}
-          chmod +x binaries/${{ matrix.binary }}
+          mkdir -p output
+          cp target/${{ matrix.target }}/release/envcc output/${{ matrix.binary }}
+          chmod +x output/${{ matrix.binary }}
 
-      - name: Rename binary (windows)
+      - name: Prepare binary (windows)
         if: runner.os == 'Windows'
-        run: cp target/${{ matrix.target }}/release/envcc.exe binaries/${{ matrix.binary }}
+        run: |
+          mkdir output
+          cp target/${{ matrix.target }}/release/envcc.exe output/${{ matrix.binary }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.binary }}
-          path: binaries/${{ matrix.binary }}
+          path: output/${{ matrix.binary }}
 
   publish:
     needs: build
@@ -95,7 +99,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org
 
       - name: Publish to npm
