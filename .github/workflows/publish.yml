@@ -1,0 +1,63 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Publish target'
+        required: true
+        type: choice
+        options:
+          - npm
+          - crates
+          - both
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish-crates:
+    if: inputs.target == 'crates' || inputs.target == 'both'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Publish to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish
+
+  publish-npm:
+    if: inputs.target == 'npm' || inputs.target == 'both'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download binaries from latest build
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries
+          merge-multiple: true
+
+      - name: List binaries
+        run: ls -lh binaries/
+
+      - name: Make binaries executable
+        run: chmod +x binaries/envcc-*
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          registry-url: https://registry.npmjs.org
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
