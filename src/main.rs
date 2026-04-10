@@ -24,7 +24,7 @@ fn main() -> io::Result<()> {
         eprintln!("Variables up to date ({} vars)", fetch.vars.len());
     }
 
-    let settings_path = std::env::current_dir()?.join(".claude").join("settings.json");
+    let settings_path = std::env::current_dir()?.join(".claude").join("settings.local.json");
     let (values, other_settings) = settings::load_settings(&settings_path)?;
 
     let mut app = App::new(fetch.vars, values, other_settings, settings_path);
