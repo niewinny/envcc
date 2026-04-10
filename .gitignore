@@ -1,1 +1,4 @@
 /target
+/binaries/*.exe
+/binaries/envcc-*
+node_modules

@@ -1,0 +1,19 @@
+{
+  "name": "envcc",
+  "version": "0.1.0",
+  "description": "TUI for configuring Claude Code environment variables",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niewinny/envcc.git"
+  },
+  "author": "niewinny <the.tecc@gmail.com>",
+  "keywords": ["claude", "claude-code", "tui", "environment", "config"],
+  "bin": {
+    "envcc": "bin/envcc.js"
+  },
+  "files": [
+    "bin/",
+    "binaries/"
+  ]
+}
