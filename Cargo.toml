@@ -1,6 +1,6 @@
 [package]
 name = "envcc"
-version = "0.1.4"
+version = "0.1.3"
 edition = "2021"
 description = "TUI for configuring Claude Code environment variables"
 license = "MIT"
